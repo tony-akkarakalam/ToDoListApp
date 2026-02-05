@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container glass">
+        <h2 style="text-align: center; margin-bottom: 2rem;">Create Account</h2>
+
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                <small style="display:block; color: gray; font-size: 0.8em;">{{ field.help_text }}</small>
+                {% endif %}
+                {% if field.errors %}
+                <small style="color: #ef4444;">{{ field.errors.0 }}</small>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Register</button>
+        </form>
+
+        <p style="text-align: center; margin-top: 1.5rem; color: var(--text-secondary);">
+            Already have an account? <a href="{% url 'login' %}" style="color: var(--primary);">Login</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

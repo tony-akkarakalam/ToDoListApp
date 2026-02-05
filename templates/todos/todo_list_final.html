@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block title %}My Todos{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="todo-hero">
+        <h1 class="hero-title" style="font-size: 3rem;">My Tasks</h1>
+        <a href="{% url 'todo-create' %}" class="btn btn-primary" style="margin-top: 1rem;">
+            <i class="fa-solid fa-plus"></i> Add New Task
+        </a>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="dashboard-grid glass"
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem; padding: 1.5rem; border-radius: 12px; text-align: center;">
+        <div class="stat-card">
+            <h4>Total Tasks</h4>
+            <p class="stat-number">{{ stats.total }}</p>
+        </div>
+        <div class="stat-card">
+            <h4>Completed</h4>
+            <p class="stat-number" style="color: var(--secondary);">{{ stats.completed }}</p>
+        </div>
+        <div class="stat-card">
+            <h4>Pending</h4>
+            <p class="stat-number" style="color: var(--accent);">{{ stats.pending }}</p>
+        </div>
+        <div class="stat-card">
+            <h4>Due Today</h4>
+            <div class="progress-ring-container">
+                <p class="stat-number" style="color: #ef4444;">{{ stats.due_today }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="glass" style="margin-bottom: 2rem; padding: 1.5rem; border-radius: 12px;">
+        <form method="get" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+            <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                <input type="text" name="q" placeholder="Search tasks..." value="{{ request.GET.q|default:'' }}"
+                    class="form-control">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0;">
+                <select name="priority" class="form-control" onchange="this.form.submit()">
+                    <option value="">All Priorities</option>
+                    <option value="HIGH" {% if priority_high %}selected{% endif %}>High Priority</option>
+                    <option value="MEDIUM" {% if priority_medium %}selected{% endif %}>Medium Priority</option>
+                    <option value="LOW" {% if priority_low %}selected{% endif %}>Low Priority</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0;">
+                <select name="sort" class="form-control" onchange="this.form.submit()">
+                    <option value="-created_at" {% if sort_newest %}selected{% endif %}>Newest First</option>
+                    <option value="created_at" {% if sort_oldest %}selected{% endif %}>Oldest First</option>
+                    <option value="due_date" {% if sort_due %}selected{% endif %}>Due Date</option>
+                </select>
+            </div>
+
+            {% if request.GET.q or request.GET.priority %}
+            <a href="{% url 'todo-list' %}" class="btn btn-primary-sm"
+                style="background: rgba(255,255,255,0.1); border: 1px solid var(--text-secondary);">Clear</a>
+            {% endif %}
+        </form>
+    </div>
+
+    {% if todos %}
+    <div class="todo-grid">
+        {% for todo in todos %}
+        <div class="todo-card glass {% if todo.completed %}completed{% endif %}">
+            <!-- Priority Badge -->
+            <div style="position: absolute; top: 10px; right: 10px; display: flex; gap: 5px;">
+                <span class="badge"
+                    style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">{{
+                    todo.get_category_display }}</span>
+
+                {% if todo.priority == "HIGH" %}
+                <span class="badge badge-high">High</span>
+                {% elif todo.priority == "MEDIUM" %}
+                <span class="badge badge-medium">Medium</span>
+                {% else %}
+                <span class="badge badge-low">Low</span>
+                {% endif %}
+            </div>
+
+            <h3>{{ todo.title }}</h3>
+
+            {% if todo.description %}
+            <p style="color: var(--text-secondary); margin: 0.5rem 0;">{{ todo.description|truncatewords:20 }}</p>
+            {% endif %}
+
+            <div
+                style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.8rem; color: var(--text-secondary);">
+                <span><i class="fa-regular fa-calendar"></i> Created: {{ todo.created_at|date:"M d, Y" }}</span>
+                {% if todo.due_date %}
+                <span class="{% if todo.due_date < today %}text-red{% else %}text-primary{% endif %}">
+                    <i class="fa-regular fa-clock"></i> Due: {{ todo.due_date|date:"M d, Y" }}
+                </span>
+                {% endif %}
+            </div>
+
+            <div class="todo-actions">
+                <a href="{% url 'todo-update' todo.pk %}" class="action-btn btn-edit" title="Edit">
+                    <i class="fa-solid fa-pen"></i>
+                </a>
+
+                <a href="{% url 'todo-delete' todo.pk %}" class="action-btn btn-delete" title="Delete">
+                    <i class="fa-solid fa-trash"></i>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="glass" style="text-align: center; padding: 3rem; border-radius: 12px;">
+        <p style="font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 1rem;">No tasks found.</p>
+        {% if request.GET.q or request.GET.priority %}
+        <p style="color: var(--text-secondary);">Try adjusting your search or filters.</p>
+        {% else %}
+        <a href="{% url 'todo-create' %}" class="btn btn-primary">Create your first task</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .badge {
+        padding: 0.2rem 0.6rem;
+        border-radius: 50px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .badge-high {
+        background: rgba(239, 68, 68, 0.2);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    .badge-medium {
+        background: rgba(234, 179, 8, 0.2);
+        color: #facc15;
+        border: 1px solid rgba(234, 179, 8, 0.4);
+    }
+
+    .badge-low {
+        background: rgba(34, 197, 94, 0.2);
+        color: #4ade80;
+        border: 1px solid rgba(34, 197, 94, 0.4);
+    }
+
+    .text-red {
+        color: #ef4444;
+    }
+
+    .text-primary {
+        color: var(--primary);
+    }
+</style>
+{% endblock %}

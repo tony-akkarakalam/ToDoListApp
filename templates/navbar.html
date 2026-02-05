@@ -1,0 +1,24 @@
+<nav class="navbar glass">
+    <div class="container navbar-content">
+        <a href="{% url 'home' %}" class="logo">
+            <i class="fa-solid fa-check-double"></i> TaskMaster
+        </a>
+        <ul class="nav-links">
+            {% if user.is_authenticated %}
+            <li><a href="{% url 'todo-list' %}" class="nav-link">My Todos</a></li>
+            <li><a href="{% url 'profile' %}" class="nav-link">Profile</a></li>
+            <li><a href="{% url 'todo-create' %}" class="btn btn-primary-sm">+ New Task</a></li>
+            <!-- Logout Form -->
+            <li>
+                <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-link btn-link">Logout</button>
+                </form>
+            </li>
+            {% else %}
+            <li><a href="{% url 'login' %}" class="nav-link">Login</a></li>
+            <li><a href="{% url 'register' %}" class="btn btn-primary">Get Started</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>

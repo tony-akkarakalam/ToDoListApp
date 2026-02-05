@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 800px;">
+    <div class="glass" style="padding: 2rem; border-radius: 16px;">
+        <div class="profile-header"
+            style="display: flex; align-items: center; gap: 2rem; margin-bottom: 2rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 2rem;">
+            <div class="avatar-container" style="position: relative;">
+                {% if user.userprofile.avatar %}
+                <img src="{{ user.userprofile.avatar.url }}" alt="Profile"
+                    style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid var(--primary);">
+                {% else %}
+                <div
+                    style="width: 120px; height: 120px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: bold;">
+                    {{ user.username.0|upper }}
+                </div>
+                {% endif %}
+            </div>
+            <div>
+                <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">{{ user.username }}</h2>
+                <p style="color: var(--text-secondary);">{{ user.email }}</p>
+            </div>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <h3 style="margin-bottom: 1.5rem; color: var(--secondary);">Update Info</h3>
+
+            <div class="form-group">
+                <label>Username</label>
+                {{ u_form.username }}
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                {{ u_form.email }}
+            </div>
+
+            <div class="form-group">
+                <label>Bio</label>
+                {{ p_form.bio }}
+            </div>
+
+            <div class="form-group">
+                <label>Profile Picture</label>
+                {{ p_form.avatar }}
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Update Profile</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block content %}
+<div class="container hero-section">
+    <h1 class="hero-title">Master Your Day</h1>
+    <p style="font-size: 1.2rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto 2rem;">
+        The most elegant and intuitive task manager you'll ever use.
+        Organize your life with style and efficiency.
+    </p>
+
+    <div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 4rem;">
+        {% if user.is_authenticated %}
+        <a href="{% url 'todo-list' %}" class="btn btn-primary">Go to Dashboard</a>
+        {% else %}
+        <a href="{% url 'register' %}" class="btn btn-primary">Get Started Free</a>
+        <a href="{% url 'login' %}" class="btn btn-primary-sm"
+            style="background: rgba(255,255,255,0.1); border: 1px solid var(--text-secondary);">Login</a>
+        {% endif %}
+    </div>
+
+    <!-- Feature Grid -->
+    <div class="todo-grid">
+        <div class="todo-card glass">
+            <i class="fa-solid fa-bolt" style="font-size: 2rem; color: var(--primary); margin-bottom: 1rem;"></i>
+            <h3>Lightning Fast</h3>
+            <p style="color: var(--text-secondary);">Experience zero latency task management built for speed.</p>
+        </div>
+        <div class="todo-card glass">
+            <i class="fa-solid fa-palette" style="font-size: 2rem; color: var(--secondary); margin-bottom: 1rem;"></i>
+            <h3>Beautiful Design</h3>
+            <p style="color: var(--text-secondary);">A stunning interface that makes planning your day a joy.</p>
+        </div>
+        <div class="todo-card glass">
+            <i class="fa-solid fa-cloud" style="font-size: 2rem; color: var(--accent); margin-bottom: 1rem;"></i>
+            <h3>Secure Cloud</h3>
+            <p style="color: var(--text-secondary);">Your data is safe, encrypted, and accessible from anywhere.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
